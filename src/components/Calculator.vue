@@ -1,18 +1,18 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 const values = ref([
     {a: '', b: ''},
 ]);
 
 let area = ref(0);
 let totalClipboard = ref(0);
-const clipBoard = {a: 5.95, b: 0.26};
-const areaClipboard = clipBoard.a * clipBoard.b;
+const clipBoard = ref({a: 5.95, b: 0.26});
+const areaClipboard = ref(0);
 const calculateResult = () => {
+    areaClipboard.value = clipBoard.value.a * clipBoard.value.b;
     // calula area de cada item y sumarlo
     area.value = values.value.reduce((a, b) => a + b.a * b.b, 0);
-    totalClipboard.value = area.value / areaClipboard;
-    console.log(totalClipboard.value);
+    totalClipboard.value = area.value / areaClipboard.value;
 
     showData.value = !showData.value
 }
@@ -27,9 +27,43 @@ const resetData = () => {
     totalClipboard.value = 0;
     showData.value = false
 }
+
+const type = ref('pvc')
+const price1 = ref(0)
+const price2 = ref(0)
+const changeType = () => {
+    if (type.value === 'pvc') {
+        clipBoard.value.a = 5.95
+        clipBoard.value.b = 0.26
+    }
+    if (type.value === 'ripado') {
+        clipBoard.value.a = 2.95
+        clipBoard.value.b = 0.17
+    }
+    if (localStorage.getItem('price1') && localStorage.getItem('price2')) {
+        price1.value = localStorage.getItem('price1')
+        price2.value = localStorage.getItem('price2')
+    }
+}
+
+onMounted(() => {
+    changeType()
+})
+
 </script>
 
 <template>
+
+    <div class="grid gap-3 grid-cols-2 p-2 mb-4 bg-white dark:bg-gray-900 antialiased ">
+        <div class="flex items-center ps-4 border border-gray-200 rounded dark:border-gray-700">
+            <input id="bordered-radio-1" v-model="type" @change="changeType" type="radio" value="pvc" name="bordered-radio" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+            <label for="bordered-radio-1" class="w-full py-4 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Cielo falso</label>
+        </div>
+        <div class="flex items-center ps-4 border border-gray-200 rounded dark:border-gray-700">
+            <input id="bordered-radio-2" v-model="type" @change="changeType" type="radio" value="ripado" name="bordered-radio" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+            <label for="bordered-radio-2" class="w-full py-4 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Ripado</label>
+        </div>
+    </div>
 
     <form @submit.prevent="calculateResult">
         <div class="relative overflow-x-auto">
@@ -124,11 +158,14 @@ const resetData = () => {
                 <!-- Modal body -->
                 <div class="p-4 md:p-5 space-y-4">
                     <div class="text-lg font-medium text-gray-900 dark:text-white">
-                        Total de tablillas: {{ totalClipboard.toFixed(2) }}
+                        Total de tablillas: {{ totalClipboard.toFixed(1) }}
                     </div>
 
-                    <div class="text-lg font-medium text-gray-900 dark:text-white">
-                        Total a cobrar: {{ (totalClipboard*50).toFixed(2) }}
+                    <div v-if="type == 'pvc'" class="text-lg font-medium text-gray-900 dark:text-white">
+                        Precio estimado: {{ (totalClipboard*price1).toFixed(2) }} /Bs.
+                    </div>
+                    <div v-else class="text-lg font-medium text-gray-900 dark:text-white">
+                        Precio estimado: {{ (totalClipboard*price2).toFixed(2) }} /Bs.
                     </div>
                 </div>
                 <!-- Modal footer -->
