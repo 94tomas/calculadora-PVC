@@ -46,6 +46,24 @@ const changeType = () => {
     }
 }
 
+
+/**
+ * texto total
+ */
+const totalClipboardText = (numero) => {
+    // Obtener la parte entera
+    let parteEntera = Math.trunc(numero);
+
+    // Obtener la parte decimal
+    let parteDecimal = numero - parteEntera;
+
+    if (parteDecimal>0) {
+        return `${parteEntera} tablillas y ${(((parteDecimal*100)*clipBoard.value.a)/100).toFixed(0)} metros`
+    }
+
+    return `${parteEntera} tablillas`
+}
+
 onMounted(() => {
     changeType()
 })
@@ -90,7 +108,7 @@ onMounted(() => {
                                 placeholder="lado A"
                                 required
                                 min="0"
-                                step="0.01"
+                                step="0.001"
                                 v-model="item.a"
                             />
                         </td>
@@ -101,7 +119,7 @@ onMounted(() => {
                                 placeholder="lado B"
                                 required
                                 min="0"
-                                step="0.01"
+                                step="0.001"
                                 v-model="item.b"
                             />
                         </td>
@@ -135,6 +153,7 @@ onMounted(() => {
                 type="submit"
                 class="w-full focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
             >Calcular</button>
+            <button type="button" @click="resetData()" class="w-full text-red-700 hover:text-white border border-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-3 py-1 text-center me-2 mb-2 dark:border-red-500 dark:text-red-500 dark:hover:text-white dark:hover:bg-red-600 dark:focus:ring-red-900">Limpiar datos</button>
         </div>
     </form>
 
@@ -158,7 +177,7 @@ onMounted(() => {
                 <!-- Modal body -->
                 <div class="p-4 md:p-5 space-y-4">
                     <div class="text-lg font-medium text-gray-900 dark:text-white">
-                        Total de tablillas: {{ totalClipboard.toFixed(1) }}
+                        Total de tablillas: {{ totalClipboardText(totalClipboard) }}
                     </div>
 
                     <div v-if="type == 'pvc'" class="text-lg font-medium text-gray-900 dark:text-white">
